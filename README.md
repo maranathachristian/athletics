@@ -24,6 +24,12 @@ https://code.visualstudio.com/
 https://go.dev/doc/install
 
 
+### Download and init
+
+Go into `~projects/athletics/server`
+
+`go mod init github/com/maranathachristian/athletics`
+
 ### Install Fiber
 
 `go get -u github.com/gofiber/fiber/v2`
@@ -35,12 +41,6 @@ https://nodejs.org/en/download/prebuilt-installer
 ### Install Yarn
 
 https://github.com/yarnpkg/yarn/releases/download/v1.22.4/yarn-1.22.4.msi
-
-### Download and init
-
-Go into `~projects/athletics/server`
-
-`go mod init github/com/maranathachristian/athletics`
 
 ### Create client app
 
