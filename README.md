@@ -33,25 +33,18 @@ https://github.com/yarnpkg/yarn/releases/download/v1.22.4/yarn-1.22.4.msi
 
 ### Install database
 
-https://www.postgresql.org/download/windows/
+https://sbp.enterprisedb.com/getfile.jsp?fileid=1259129
 
 Create a user via pgAdmin called `maranatha`. Give that user the password `christian`. Then create a database called `maranatha`.
 If you want to use another database, make changes to the .env file.
 
-### Download and init
+### Set up
 
-Go into `~projects/athletics/server`
+**Windows:** run `setup.bat`
+**Mac:** run `setup.zsh`
+**Linux:** run `setup.sh`
 
-`go mod init github/com/maranathachristian/athletics`
+### Execution
 
-### Install Fiber
-
-`go get -u github.com/gofiber/fiber/v2`
-
-### Create client app (OPTIONAL - I have not tested this yet)
-
-`yarn create vite client -- --template react-ts`
-
-### Install dependencies (OPTIONAL - I have not tested this yet)
-
-`yarn add @mantine/hooks @mantine/core swr @primer/octicons-react`
+**Client:** run `yarn run` in `client/`
+**Server:** run `go build` in `server/` and then run the `.exe` file generated
