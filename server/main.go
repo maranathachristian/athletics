@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github/com/maranathachristian/athletics/models"
+	"github/com/maranathachristian/athletics/storage"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -18,29 +21,6 @@ type Game struct {
 
 type Repository struct {
 	DB *gorm.DB
-}
-
-func (r *Repository) DeleteGame(context *fiber.Ctx) error {
-	gameModel := models.Games{}
-	id := context.Params("id")
-	if id == "" {
-		context.Status(http.StatusInternalServerError).JSON(
-			&fiber.Map{"message":"Id cannot be empty"})
-		return nil
-	}
-
-	err := r.DB.Delete(gameModel, id)
-	if err.Error != nil {
-		context.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message":"Could not delete game"})
-		return err.Error
-	}
-	context.Status(http.StatusOK).JSON(
-		&fiber.Map{"message":"Game deleted successfully"})
-	return nil
-}
-
-func (r *Repository) GetGameByID(context *fiber.Ctx) error {
 }
 
 func (r *Repository) CreateGame(context *fiber.Ctx) error {
@@ -61,7 +41,53 @@ func (r *Repository) CreateGame(context *fiber.Ctx) error {
 	}
 
 	context.Status(http.StatusOK).JSON(
-		&fiber.Map{"message": "game has been added"})
+		&fiber.Map{"message": "Game has been added"})
+	return nil
+}
+
+func (r *Repository) DeleteGame(context *fiber.Ctx) error {
+	gameModel := models.Games{}
+	id := context.Params("id")
+	if id == "" {
+		context.Status(http.StatusInternalServerError).JSON(
+			&fiber.Map{"message": "Id cannot be empty"})
+		return nil
+	}
+
+	err := r.DB.Delete(gameModel, id).Error
+	if err != nil {
+		context.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"message": "Could not delete game"})
+		return err
+	}
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{"message": "Game deleted successfully"})
+	return nil
+}
+
+func (r *Repository) GetGameByID(context *fiber.Ctx) error {
+	id := context.Params("id")
+	gameModel := &models.Games{}
+	if id == "" {
+		context.Status(http.StatusInternalServerError).JSON(
+			&fiber.Map{"message": "id cannot be empty"})
+		return nil
+	}
+
+	fmt.Println("the ID is: ", id)
+
+	err := r.DB.Where("id = ?", id).First(gameModel).Error
+	if err != nil {
+		context.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"message": "Could not get the game"})
+		return err
+	}
+
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{
+			"message": "Game id retrieved successfully",
+			"data":    gameModel,
+		})
 	return nil
 }
 
@@ -71,14 +97,15 @@ func (r *Repository) GetGames(context *fiber.Ctx) error {
 	err := r.DB.Find(gameModels).Error
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message":"Could not get books"})
+			&fiber.Map{"message": "Could not get books"})
 		return err
 	}
 
 	context.Status(http.StatusOK).JSON(
-		&fiber.Map{"message":	"Games retrieved successfully"
-				   "data":		gameModels,
-	})
+		&fiber.Map{
+			"message": "Games retrieved successfully",
+			"data":    gameModels,
+		})
 	return nil
 }
 
@@ -97,12 +124,12 @@ func main() {
 		log.Fatal(err)
 	}
 	config := &storage.Config{
-		Host:		os.Getenv("DB_HOST"),
-		Port:		os.Getenv("DB_PORT"),
-		DBName:		os.Getenv("DB_NAME"),
-		User:		os.Getenv("DB_USER"),
-		Password:	os.Getenv("DB_PASS"),
-		SSLMode:	os.Getenv("DB_SSLMODE"),
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		DBName:   os.Getenv("DB_NAME"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASS"),
+		SSLMode:  os.Getenv("DB_SSLMODE"),
 	}
 
 	app := fiber.New()
@@ -112,9 +139,13 @@ func main() {
 	})
 
 	db, err := storage.NewConnection(config)
-
 	if err != nil {
 		log.Fatal("Could not load database")
+	}
+
+	err = models.MigrateGames(db)
+	if err != nil {
+		log.Fatal("Could not migrate database")
 	}
 
 	r := Repository{

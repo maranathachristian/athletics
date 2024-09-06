@@ -23,6 +23,20 @@ https://code.visualstudio.com/
 
 https://go.dev/doc/install
 
+### Install Node
+
+https://nodejs.org/en/download/prebuilt-installer
+
+### Install Yarn
+
+https://github.com/yarnpkg/yarn/releases/download/v1.22.4/yarn-1.22.4.msi
+
+### Install database
+
+https://www.postgresql.org/download/windows/
+
+Create a user via pgAdmin called `maranatha`. Give that user the password `christian`. Then create a database called `maranatha`.
+If you want to use another database, make changes to the .env file.
 
 ### Download and init
 
@@ -34,22 +48,10 @@ Go into `~projects/athletics/server`
 
 `go get -u github.com/gofiber/fiber/v2`
 
-### Install Node
-
-https://nodejs.org/en/download/prebuilt-installer
-
-### Install Yarn
-
-https://github.com/yarnpkg/yarn/releases/download/v1.22.4/yarn-1.22.4.msi
-
-### Create client app
+### Create client app (OPTIONAL - I have not tested this yet)
 
 `yarn create vite client -- --template react-ts`
 
-### Install database
-
-https://www.postgresql.org/download/windows/
-
-### Install dependencies
+### Install dependencies (OPTIONAL - I have not tested this yet)
 
 `yarn add @mantine/hooks @mantine/core swr @primer/octicons-react`
