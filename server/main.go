@@ -14,6 +14,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const version = "1.0.0"
+
 type Game struct {
 	Sport    string `json:"sport"`
 	Opponent string `json:"opponent"`
@@ -110,8 +112,19 @@ func (r *Repository) GetGames(context *fiber.Ctx) error {
 	return nil
 }
 
+func status(context *fiber.Ctx) error {
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{
+			"version": version,
+		})
+	return nil
+}
+
 func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
+
+	api.Get("/status", status)
+
 	api.Post("/games", r.CreateGame)
 	api.Delete("/games/:id", r.DeleteGame)
 	api.Get("/games/:id", r.GetGameByID)
@@ -134,11 +147,8 @@ func main() {
 	}
 
 	app := fiber.New()
+	// TODO : figure out the correct cors settings for the app
 	app.Use(cors.New())
-
-	app.Get("/healthcheck", func(c *fiber.Ctx) error {
-		return c.SendString("OK")
-	})
 
 	db, err := storage.NewConnection(config)
 	if err != nil {
