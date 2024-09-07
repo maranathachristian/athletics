@@ -54,4 +54,4 @@ Go into `~projects/athletics/server`
 
 ### Install dependencies (OPTIONAL - I have not tested this yet)
 
-`yarn add @mantine/hooks @mantine/core swr @primer/octicons-react`
+`yarn add @mantine/hooks @mantine/core @mantine/form swr @primer/octicons-react`
