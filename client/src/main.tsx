@@ -10,7 +10,6 @@ const version = "1.0.0"
 // TODO : handle anything else that needs to be handled
 axios.get(api + "status")
   .then(status => {
-    if (status.status)
     if (status.data.version !== version) {
       console.error("Server and client out-of-date.")
     }
