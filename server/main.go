@@ -112,6 +112,10 @@ func (r *Repository) GetGames(context *fiber.Ctx) error {
 	return nil
 }
 
+/*
+ * Status checking to ensure that
+ * front and backend are up-to-date.
+*/
 func status(context *fiber.Ctx) error {
 	context.Status(http.StatusOK).JSON(
 		&fiber.Map{
@@ -131,6 +135,7 @@ func (r *Repository) SetupRoutes(app *fiber.App) {
 	api.Get("/games", r.GetGames)
 }
 
+// ! Player/PlayerInfo/SchoolClass/TeamPlayer untested types
 func main() {
 	fmt.Print("Maranatha Christian Athletics Application")
 	err := godotenv.Load(".env")
