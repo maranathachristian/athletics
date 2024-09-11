@@ -2,7 +2,8 @@ import { useDisclosure } from '@mantine/hooks';
 import { useForm } from '@mantine/form'
 import { Button, Modal, TextInput } from '@mantine/core'
 import { KeyedMutator } from 'swr';
-import { ENDPOINT, Game } from "../App"
+import { ENDPOINT } from "../services/queries"
+import { Game } from "../types/game"
 import '@mantine/core/styles.css';
 
 function CreateGame({mutate}: {mutate: KeyedMutator<Game[]>}) {
@@ -24,6 +25,8 @@ function CreateGame({mutate}: {mutate: KeyedMutator<Game[]>}) {
       },
       body: JSON.stringify(values),
     }).then((r) => r.json());
+
+    console.log(updated);
 
     mutate(updated);
     form.reset();

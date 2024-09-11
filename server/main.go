@@ -43,8 +43,17 @@ func (r *Repository) CreateGame(context *fiber.Ctx) error {
 		return err
 	}
 
-	context.Status(http.StatusOK).JSON(
-		&fiber.Map{"message": "Game has been added"})
+	gameModels := &[]models.Games{}
+
+	err = r.DB.Find(gameModels).Error
+	if err != nil {
+		context.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"message": "Could not get games"})
+		return err
+	}
+
+	context.Status(http.StatusOK).JSON(gameModels)
+
 	return nil
 }
 
@@ -100,22 +109,19 @@ func (r *Repository) GetGames(context *fiber.Ctx) error {
 	err := r.DB.Find(gameModels).Error
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
-			&fiber.Map{"message": "Could not get books"})
+			&fiber.Map{"message": "Could not get games"})
 		return err
 	}
 
-	context.Status(http.StatusOK).JSON(
-		&fiber.Map{
-			"message": "Games retrieved successfully",
-			"data":    gameModels,
-		})
+	context.Status(http.StatusOK).JSON(gameModels)
+
 	return nil
 }
 
 /*
  * Status checking to ensure that
  * front and backend are up-to-date.
-*/
+ */
 func status(context *fiber.Ctx) error {
 	context.Status(http.StatusOK).JSON(
 		&fiber.Map{
@@ -128,7 +134,6 @@ func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
 
 	api.Get("/status", status)
-
 	api.Post("/games", r.CreateGame)
 	api.Delete("/games/:id", r.DeleteGame)
 	api.Get("/games/:id", r.GetGameByID)
@@ -153,7 +158,10 @@ func main() {
 
 	app := fiber.New()
 	// TODO : figure out the correct cors settings for the app
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:8081",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
 
 	db, err := storage.NewConnection(config)
 	if err != nil {
