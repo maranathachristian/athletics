@@ -1,28 +1,40 @@
-import { Box, List, MantineProvider } from "@mantine/core";
-import './App.css';
-import CreateGame from "./components/CreateGame";
+import { useState, useEffect } from 'react';
+import { Button, MantineProvider } from '@mantine/core';
+import GameList from './components/GameList';
+import AddGameModal from './components/AddGameModal';
+import { Game } from './models/Game';
+import { fetchGames } from './services/GameService';
 import '@mantine/core/styles.css';
-import { useGames } from "./services/queries";
+import '@mantine/dates/styles.css';
 
 function App() {
-  const {data, mutate} = useGames();
+  const [games, setGames] = useState<Game[]>([]);
+  const [opened, setOpened] = useState(false);
 
-  console.log(data);
+  // Fetch games when the component mounts
+  useEffect(() => {
+    fetchGames()
+      .then(setGames)
+      .catch((error) => console.error('Error fetching games:', error));
+  }, []);
+
+  // Update the game list when a new game is added
+  const handleGameAdded = (newGame: Game) => {
+    setGames((prevGames) => [...prevGames, newGame]);
+  };
 
   return (
     <MantineProvider>
-      <Box>
-        <List spacing="xs" size="sm" mb={12} center>
-          {data?.map((game) => {
-            return (
-              <List.Item key={`game_list__${game.id}`}>
-                {game.sport} Maranatha vs {game.opponent} at {game.location}
-              </List.Item>
-            );
-          })}
-        </List>
-        <CreateGame mutate={mutate}/>
-      </Box>
+      <div>
+        <GameList games={games} />
+        <Button onClick={() => setOpened(true)}>Add Game</Button>
+
+        <AddGameModal 
+          opened={opened} 
+          onClose={() => setOpened(false)} 
+          onGameAdded={handleGameAdded} 
+        />
+      </div>
     </MantineProvider>
   );
 }
