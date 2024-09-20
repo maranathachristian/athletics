@@ -14,6 +14,20 @@ import (
 	"github.com/joho/godotenv"
 )
 
+func seedAdminUser() {
+	var admin models.User
+	database.DB.Where("email = ?", "admin").First(&admin)
+	if admin.ID == 0 {
+		admin = models.User{
+			Name:  "Admin",
+			Email: "admin",
+			Role:  "ADMIN",
+		}
+		admin.HashPassword("admin")
+		database.DB.Create(&admin)
+	}
+}
+
 func main() {
 	fmt.Print("Maranatha Christian Athletics Application")
 	// Initialize the database connection
@@ -32,9 +46,12 @@ func main() {
 	database.ConnectDB(config)
 
 	// Migrate the models
-	if err := database.DB.AutoMigrate(&models.Sport{}, &models.Game{}); err != nil {
+	if err := database.DB.AutoMigrate(&models.User{}, &models.Sport{}, &models.Game{}); err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
+
+	// Seed the admin user
+	seedAdminUser()
 
 	// Create a new Fiber app
 	app := fiber.New()
@@ -49,6 +66,8 @@ func main() {
 	app.Get("/games", routes.GetGames)
 	app.Post("/games", routes.CreateGame)
 	app.Get("/sports", routes.GetSports) // Route to fetch all sports
+	app.Post("/login", routes.Login)
+	app.Post("/register", routes.Register)
 
 	// Start the server
 	log.Fatal(app.Listen(":8080"))

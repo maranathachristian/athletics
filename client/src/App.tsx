@@ -1,15 +1,23 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
-import { Button, MantineProvider } from '@mantine/core';
+import { AppShell, Burger, Button, Group, MantineProvider } from '@mantine/core';
 import GameList from './components/GameList';
 import AddGameModal from './components/AddGameModal';
 import { Game } from './models/Game';
 import { fetchGames } from './services/GameService';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
+import Dashboard from './components/Dashboard';
+import { useDisclosure } from '@mantine/hooks';
 
-function App() {
+const isAdmin = (): boolean => {
+  return (localStorage.getItem('role') == "ADMIN");
+};
+
+const App: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
   const [opened, setOpened] = useState(false);
+  const [burgerOpened, { toggle }] = useDisclosure();
 
   // Fetch games when the component mounts
   useEffect(() => {
@@ -25,16 +33,35 @@ function App() {
 
   return (
     <MantineProvider>
-      <div>
-        <GameList games={games} />
-        <Button onClick={() => setOpened(true)}>Add Game</Button>
+      <AppShell
+        layout="alt"
+        header={{ height: 60 }}
+        footer={{ height: 60 }}
+        padding="md"
+      >
+        <AppShell.Header>
+          <Group h="100%" px="md">
+            <Burger opened={burgerOpened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            <Dashboard />
+          </Group>
+        </AppShell.Header>
+        <AppShell.Main>
 
-        <AddGameModal 
-          opened={opened} 
-          onClose={() => setOpened(false)} 
-          onGameAdded={handleGameAdded} 
-        />
-      </div>
+          <GameList games={games} />
+
+          {isAdmin() && (
+            <Button onClick={() => setOpened(true)}>Add Game</Button>
+          )}
+
+          <AddGameModal 
+            opened={opened} 
+            onClose={() => setOpened(false)} 
+            onGameAdded={handleGameAdded} 
+          />
+        </AppShell.Main>
+
+        <AppShell.Footer p="md">Footer</AppShell.Footer>
+      </AppShell>
     </MantineProvider>
   );
 }
