@@ -46,7 +46,7 @@ func main() {
 	database.ConnectDB(config)
 
 	// Migrate the models
-	if err := database.DB.AutoMigrate(&models.User{}, &models.Sport{}, &models.Game{}); err != nil {
+	if err := database.DB.AutoMigrate(&models.User{}, &models.Sport{}, &models.Game{}, &models.Player{}, &models.Team{}, &models.PlayerInfo{}); err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
 
