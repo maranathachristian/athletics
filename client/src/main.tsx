@@ -1,23 +1,20 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import axios from 'axios'
-import './index.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import App from './App';
+import Login from './components/Login';
+import Registration from './components/Registration';
+import Dashboard from './components/Dashboard';
 
-const api = "http://localhost:8080/api/"
-const version = "1.0.0"
-
-// TODO : handle anything else that needs to be handled
-axios.get(api + "status")
-  .then(status => {
-    if (status.data.version !== version) {
-      console.error("Server and client out-of-date.")
-    }
-  })
-  .catch(_error => console.error("Server is offline."));
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Registration />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<App />} />
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>,
+);
