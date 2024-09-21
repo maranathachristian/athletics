@@ -63,6 +63,7 @@ func main() {
 	}))
 
 	// Set up routes
+	app.Get("/status", routes.GetStatus)
 	app.Get("/games", routes.GetGames)
 	app.Post("/games", routes.CreateGame)
 	app.Get("/sports", routes.GetSports) // Route to fetch all sports

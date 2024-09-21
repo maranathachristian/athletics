@@ -5,6 +5,13 @@ import App from './App';
 import Login from './components/Login';
 import Registration from './components/Registration';
 import Dashboard from './components/Dashboard';
+import { GetStatus } from './services/StatusService';
+
+// TODO: make it display a page saying that the site is down or something
+const [status, error] = GetStatus();
+if (!status) {
+  console.log(error);
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { AddGameRequest, Game } from '../models/Game';
 import { Sport } from '../models/Sport';
-
-// API base URL
-const API_URL = 'http://localhost:8080';
+import { API_URL } from '../constants';
 
 // Fetch all sports from the backend
 export const fetchSports = async (): Promise<Sport[]> => {
