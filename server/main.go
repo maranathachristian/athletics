@@ -8,13 +8,15 @@ import (
 	"github/com/maranathachristian/athletics/database"
 	"github/com/maranathachristian/athletics/models"
 	"github/com/maranathachristian/athletics/routes"
+	scoresocket "github/com/maranathachristian/athletics/websocket"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/websocket/v2"
 	"github.com/joho/godotenv"
 )
 
-func seedAdminUser() {
+func seedData() {
 	var admin models.User
 	database.DB.Where("email = ?", "admin").First(&admin)
 	if admin.ID == 0 {
@@ -25,6 +27,17 @@ func seedAdminUser() {
 		}
 		admin.HashPassword("admin")
 		database.DB.Create(&admin)
+	}
+
+	var sport models.Sport
+	database.DB.Where("name = ?", "Girls Volleyball").First(&sport)
+	if sport.ID == 0 {
+		sport = models.Sport{
+			Name:   "Girls Volleyball",
+			Season: "2024-2025",
+			Level:  "Varsity",
+		}
+		database.DB.Create(&sport)
 	}
 }
 
@@ -46,15 +59,24 @@ func main() {
 	database.ConnectDB(config)
 
 	// Migrate the models
-	if err := database.DB.AutoMigrate(&models.User{}, &models.Sport{}, &models.Game{}); err != nil {
+	if err := database.DB.AutoMigrate(&models.User{}, &models.Sport{}, &models.Game{}, &models.Score{}); err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
 
-	// Seed the admin user
-	seedAdminUser()
+	// Seed the admin user and initial league
+	seedData()
 
 	// Create a new Fiber app
 	app := fiber.New()
+
+	// WebSocket route
+	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
+		// Handle WebSocket connections
+		scoresocket.HandleConnections(c)
+	}))
+
+	// Start listening for incoming WebSocket messages in a separate goroutine
+	go scoresocket.HandleMessages()
 
 	// Cores settings for the app
 	app.Use(cors.New(cors.Config{
@@ -66,6 +88,8 @@ func main() {
 	app.Get("/status", routes.GetStatus)
 	app.Get("/games", routes.GetGames)
 	app.Post("/games", routes.CreateGame)
+	app.Get("/games/:gameId", routes.GetGameDetails)
+	app.Post("/games/:gameId/scores", routes.AddScore)
 	app.Get("/sports", routes.GetSports) // Route to fetch all sports
 	app.Post("/login", routes.Login)
 	app.Post("/register", routes.Register)

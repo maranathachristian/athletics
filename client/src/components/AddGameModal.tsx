@@ -18,7 +18,8 @@ interface AddGameModalProps {
 const AddGameModal: React.FC<AddGameModalProps> = ({ opened, onClose, onGameAdded }) => {
   const [newGame, setNewGame] = useState<AddGameRequest>({
     sportId: 0, // Store the selected sport ID here
-    opponent: '',
+    hometeam: '',
+    awayteam: '',
     location: '',
     gametime: new Date().toISOString(),
   });
@@ -43,7 +44,7 @@ const AddGameModal: React.FC<AddGameModalProps> = ({ opened, onClose, onGameAdde
 
       const game = await addGame(formattedGame);
       onGameAdded(game);
-      setNewGame({ sportId: 0, opponent: '', location: '', gametime: new Date().toISOString() });
+      setNewGame({ sportId: 0, hometeam: '', awayteam: '', location: '', gametime: new Date().toISOString() });
       onClose();
     } catch (error) {
       console.error('Error adding game:', error);
@@ -64,9 +65,14 @@ const AddGameModal: React.FC<AddGameModalProps> = ({ opened, onClose, onGameAdde
           }))}
         />
         <TextInput
-          label="Opponent"
-          value={newGame.opponent}
-          onChange={(event) => setNewGame({ ...newGame, opponent: event.currentTarget.value })}
+          label="Home Team"
+          value={newGame.hometeam}
+          onChange={(event) => setNewGame({ ...newGame, hometeam: event.currentTarget.value })}
+        />
+        <TextInput
+          label="Away Team"
+          value={newGame.awayteam}
+          onChange={(event) => setNewGame({ ...newGame, awayteam: event.currentTarget.value })}
         />
         <TextInput
           label="Location"

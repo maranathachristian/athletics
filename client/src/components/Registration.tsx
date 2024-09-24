@@ -1,6 +1,7 @@
 import { Button, MantineProvider } from '@mantine/core';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../constants';
 
 const RegistrationPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -10,7 +11,7 @@ const RegistrationPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleRegister = async () => {
-    const response = await fetch('http://localhost:8080/register', {
+    const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password, confirm_password: confirmPassword }),

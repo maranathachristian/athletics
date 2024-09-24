@@ -1,4 +1,5 @@
 import { Game } from '../models/Game';
+import { Link } from 'react-router-dom';
 import Sport from './Sport';
 import dayjs from 'dayjs';
 
@@ -19,7 +20,10 @@ const GameList: React.FC<GameListProps> = ({ games }) => {
             ) : (
               <span>No sport info available</span>
             )} 
-            vs. {game.opponent} at {game.location} on {dayjs(game.gametime).format('MM-DD-YYYY hh:mm a')}
+            <br/>
+            <Link to={`/games/${game.id}`}>
+              {game.hometeam} vs {game.awayteam} at {game.location} on {dayjs(game.gametime).format('MM-DD-YYYY hh:mm a')}
+            </Link>
           </li>
         ))}
       </ul>

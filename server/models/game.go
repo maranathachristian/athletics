@@ -10,15 +10,18 @@ type Game struct {
 	ID       uint      `json:"id" gorm:"primaryKey"`
 	SportID  uint      `json:"sport_id"` // Foreign key reference to Sport
 	Sport    Sport     `json:"sport" gorm:"foreignKey:SportID"`
-	Opponent string    `json:"opponent"`
+	HomeTeam string    `json:"hometeam"`
+	AwayTeam string    `json:"awayteam"`
 	Location string    `json:"location"`
 	GameTime time.Time `json:"gametime"`
+	Scores   []Score   `json:"scores" gorm:"foreignKey:GameID"`
 }
 
 // Temporary struct to hold the incoming JSON data
 type TempGame struct {
 	SportID  uint   `json:"sportId"`
-	Opponent string `json:"opponent"`
+	HomeTeam string `json:"hometeam"`
+	AwayTeam string `json:"awayteam"`
 	Location string `json:"location"`
 	GameTime string `json:"gametime"` // Temporary string field for parsing
 }
